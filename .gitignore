@@ -1,0 +1,20 @@
+# dependencies
+*/build
+*/node_modules
+*/.pnp
+*.pnp.js
+
+# misc
+*.DS_Store
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+*.terraform/
+*.terraform*
+terraform.*
+
+.nvmrc*
+frontend/.env*
+
+deployment_number
