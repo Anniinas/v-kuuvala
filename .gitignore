@@ -17,4 +17,6 @@ terraform.*
 .nvmrc*
 frontend/.env*
 
+.vscode
+
 deployment_number
