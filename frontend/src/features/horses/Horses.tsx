@@ -15,7 +15,7 @@ const REGION = "eu-north-1";
 
 const s3Config = {
   bucketName: S3_BUCKET,
-  dirName: "images/horses/" /* Optional */,
+  dirName: "images/" /* Optional */,
   region: REGION,
   accessKeyId: "",
   secretAccessKey: "",

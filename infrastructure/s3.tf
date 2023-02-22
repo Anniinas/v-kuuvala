@@ -22,6 +22,27 @@ resource "aws_s3_object" "images" {
   key           = "images/"
 }
 
+resource "aws_s3_bucket_public_access_block" "images" {
+  bucket = aws_s3_bucket.frontend.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_cors_configuration" "images" {
+  bucket = aws_s3_bucket.frontend.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST", "GET"]
+    allowed_origins = ["*"]
+    max_age_seconds = 3000
+    expose_headers = ["x-amz-server-side-encryption"]
+  }
+}
+
 
 resource "aws_s3_bucket" "backend" {
   bucket        = "${var.project_name}-backend"
