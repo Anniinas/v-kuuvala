@@ -6,8 +6,8 @@ export interface Horse {
   readonly name: string;
   readonly gender: string;
   readonly dob: string;
-  readonly sire: string;
-  readonly dam: string;
+  readonly sireId: string;
+  readonly damId: string;
   readonly color: string;
   readonly height: string;
   readonly discpline: string;
@@ -42,8 +42,8 @@ export const createHorse = createAsyncThunk<
     readonly name: string;
     readonly gender: string;
     readonly dob: string;
-    readonly sire: string;
-    readonly dam: string;
+    readonly sireId: string;
+    readonly damId: string;
     readonly color: string;
     readonly height: string;
     readonly discpline: string;
@@ -72,8 +72,8 @@ export const createHorse = createAsyncThunk<
       name: arg.name,
       gender: arg.gender,
       dob: arg.dob,
-      sire: arg.sire,
-      dam: arg.dam,
+      sireId: arg.sireId,
+      damId: arg.damId,
       color: arg.color,
       height: arg.height,
       discpline: arg.discpline,
@@ -131,6 +131,30 @@ export const fetchHorses = createAsyncThunk<
     });
 });
 
+export const fetchHorse = createAsyncThunk<
+  Horse[],
+  void,
+  { readonly rejectValue: { readonly errorMessage: string } }
+>("horse/fetch", async (arg, thunkAPI) => {
+  return await fetch("/api/horse/", {
+    method: "GET",
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error(
+          `Unexpected response from server (code ${response.status}).`
+        );
+      }
+    })
+
+    .catch(function (error) {
+      console.error(error);
+      return thunkAPI.rejectWithValue({ errorMessage: error.message });
+    });
+});
+
 export const horsesSlice = createSlice({
   name: "horses",
   initialState,
@@ -155,6 +179,16 @@ export const horsesSlice = createSlice({
     });
 
     builder.addCase(fetchHorses.rejected, (state, action) => {
+      if (action.payload !== undefined) {
+        state.errorMessage = action.payload.errorMessage;
+      }
+    });
+
+    builder.addCase(fetchHorse.fulfilled, (state, action) => {
+      state.horses = action.payload;
+    });
+
+    builder.addCase(fetchHorse.rejected, (state, action) => {
       if (action.payload !== undefined) {
         state.errorMessage = action.payload.errorMessage;
       }

@@ -25,8 +25,8 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
     breed: string;
     gender: string;
     dob: string;
-    sire: string;
-    dam: string;
+    sireId: string;
+    damId: string;
     color: string;
     height: string;
     discpline: string;
@@ -50,8 +50,8 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
           breed: requestBodyObject.breed,
           gender: requestBodyObject.gender,
           dob: requestBodyObject.dob,
-          sire: requestBodyObject.sire,
-          dam: requestBodyObject.dam,
+          sireId: requestBodyObject.sireId,
+          damId: requestBodyObject.damId,
           color: requestBodyObject.color,
           height: requestBodyObject.height,
           discpline: requestBodyObject.discpline,
@@ -193,8 +193,39 @@ const handleGetHorsesRequest = async () => {
   };
 };
 
+const handleGetHorseRequest = async () => {
+  const queryResult: ScanOutput = await new Promise((resolve, reject) => {
+    docClient.scan(
+      { TableName: "horses", Limit: 100 },
+      (err: AWSError, data: ScanOutput) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      }
+    );
+  });
+
+  return {
+    statusCode: 200,
+    headers: {
+      "content-type": "application/json",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT",
+    },
+    body: JSON.stringify(queryResult.Items),
+  };
+};
+
 export const handler: APIGatewayProxyHandler = async (event) => {
   const routeKey = `${event.httpMethod} ${event.pathParameters?.proxy}`;
+
+  console.info("EVENT\n" + JSON.stringify(event, null, 2));
+
+  //const id = routeKey.match(/(?<=horse\/)[0-9]+/)?.[0];
 
   if (routeKey === "GET notes/") {
     return handleGetNotesRequest();
@@ -210,6 +241,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
   if (routeKey === "GET horses/") {
     return handleGetHorsesRequest();
+  }
+
+  if (routeKey === "GET horse/") {
+    return handleGetHorseRequest();
   }
 
   return {

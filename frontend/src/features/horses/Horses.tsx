@@ -8,32 +8,56 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 
-import ReactS3Client from "react-aws-s3-typescript";
+import AWS from "aws-sdk";
 
-const S3_BUCKET = "anniina-react-spa-frontend";
-const REGION = "eu-north-1";
+var albumBucketName = "anniina-react-spa-frontend";
+var bucketRegion = "eu-north-1";
+var IdentityPoolId = "eu-north-1:8124d7ec-2ed2-4c10-bccb-b9bd2b1323a0";
 
-const s3Config = {
-  bucketName: S3_BUCKET,
-  dirName: "images/" /* Optional */,
-  region: REGION,
-  accessKeyId: "",
-  secretAccessKey: "",
-};
+AWS.config.update({
+  region: bucketRegion,
+  credentials: new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: IdentityPoolId,
+  }),
+});
 
-const addImage = async (e: any) => {
+var s3 = new AWS.S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: albumBucketName },
+});
+
+const addImage = (e: any) => {
   console.log(e.target.files[0]);
-  //setNewHorseImages(e.target.files[0]);
 
-  const s3 = new ReactS3Client(s3Config);
-
-  try {
-    const res = await s3.uploadFile(e.target.files[0]);
-
-    console.log(res);
-  } catch (exception) {
-    console.log(exception);
+  var files = e.target.files;
+  if (!files.length) {
+    return alert("Please choose a file to upload first.");
   }
+  var file = files[0];
+  var fileName = file.name;
+  var albumPhotosKey = "images/";
+
+  var photoKey = albumPhotosKey + fileName;
+
+  // Use S3 ManagedUpload class as it supports multipart uploads
+  var upload = new AWS.S3.ManagedUpload({
+    params: {
+      Bucket: albumBucketName,
+      Key: photoKey,
+      Body: file,
+    },
+  });
+
+  var promise = upload.promise();
+
+  promise.then(
+    function (data) {
+      alert("Successfully uploaded photo.");
+    },
+    function (err) {
+      return alert("There was an error uploading your photo: ");
+    }
+  );
 };
 
 export const Horses = () => {
@@ -53,6 +77,8 @@ export const Horses = () => {
   const [newHorseBreederName, setNewHorseBreederName] = useState("");
   const [newHorseLocation, setNewHorseLocation] = useState("");
   const [newHorseRegCode, setNewHorseRegCode] = useState("");
+  const [newHorseSireId, setNewHorseSireId] = useState("");
+  const [newHorsDamId, setNewHorseDamId] = useState("");
   const [newHorsePersonality, setNewHorsePersonality] = useState("");
   const [newHorseCreatedDate, setNewHorseCreatedDate] = useState("");
   const [newHorseImages, setNewHorseImages] = useState({ img: "" });
@@ -69,31 +95,14 @@ export const Horses = () => {
       <h1>Add horse</h1>
       <form
         onSubmit={(e) => {
-          /*
-          const params = {
-            ACL: "public-read",
-            Body: newHorseImages,
-            Bucket: S3_BUCKET,
-            Key: newHorseImages.name,
-          };
-
-          myBucket
-            .putObject(params)
-            .on("httpUploadProgress", (evt) => {
-              setProgress(Math.round((evt.loaded / evt.total) * 100));
-            })
-            .send((err) => {
-              if (err) console.log(err);
-            }); */
-
           reduxDispatch(
             createHorse({
               breed: newHorseBreed,
               name: newHorseName,
               gender: newHorseGender,
               dob: newHorseDOB,
-              sire: newHorseSire,
-              dam: newHorseDam,
+              sireId: newHorseSire,
+              damId: newHorseDam,
               color: newHorseColor,
               height: newHorseHeight,
               discpline: newHorseDiscpline,
@@ -242,16 +251,36 @@ export const Horses = () => {
                   type="text"
                 />
               </InputGroup>
-              <Form.Label htmlFor="create-server-reg-code">
-                Reg. code
-              </Form.Label>
+              <Form.Label htmlFor="create-server-reg-code">Reg.code</Form.Label>
               <InputGroup className="mb-3">
                 <Form.Control
                   id="reg-code"
                   aria-describedby="reg-code"
                   value={newHorseRegCode}
                   placeholder=""
-                  onChange={(e) => setNewHorseRegCode(newHorseRegCode)}
+                  onChange={(e) => setNewHorseRegCode(e.target.value)}
+                  type="text"
+                />
+              </InputGroup>
+              <Form.Label htmlFor="create-server-sireId">Sire</Form.Label>
+              <InputGroup className="mb-3">
+                <Form.Control
+                  id="sireId"
+                  aria-describedby="sireIde"
+                  value={newHorseSireId}
+                  placeholder=""
+                  onChange={(e) => setNewHorseSireId(e.target.value)}
+                  type="text"
+                />
+              </InputGroup>
+              <Form.Label htmlFor="create-server-sireId">Dam</Form.Label>
+              <InputGroup className="mb-3">
+                <Form.Control
+                  id="damId"
+                  aria-describedby="damId"
+                  value={newHorsDamId}
+                  placeholder=""
+                  onChange={(e) => setNewHorseDamId(e.target.value)}
                   type="text"
                 />
               </InputGroup>
@@ -305,7 +334,7 @@ export const Horses = () => {
         </thead>
         <tbody>
           {reduxState.horses.horses.map((horse) => (
-            <tr>
+            <tr key={horse.id}>
               <td>{horse.id}</td>
               <td>{horse.name}</td>
               <td>{horse.breed}</td>

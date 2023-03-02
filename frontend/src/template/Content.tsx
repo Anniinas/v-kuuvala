@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Horses } from "../features/horses/Horses";
+import { HorseProfile } from "../features/horses/HorseProfile";
 
 export const Content = () => {
   return (
@@ -9,6 +10,7 @@ export const Content = () => {
         <BrowserRouter>
           <Routes>
             <Route path="horses" element={<Horses />} />
+            <Route path="horse/:horseId" element={<HorseProfile />} />
           </Routes>
         </BrowserRouter>
       </div>
