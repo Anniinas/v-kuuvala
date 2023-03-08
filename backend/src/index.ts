@@ -9,6 +9,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
   let requestBodyJson = "";
+  console.log("handleCreateHorseRequest");
   {
     if (event.isBase64Encoded) {
       requestBodyJson = Buffer.from(event.body ?? "", "base64").toString(
@@ -79,7 +80,7 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
   return {
     statusCode: 201,
     headers: {
-      "content-type": "appltext/plain",
+      "content-type": "application/json",
       "Access-Control-Allow-Headers": "Content-Type",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT",
@@ -181,6 +182,8 @@ const handleGetHorsesRequest = async () => {
     );
   });
 
+  console.info("EVENT\n handleGetHorsesRequest");
+
   return {
     statusCode: 200,
     headers: {
@@ -235,7 +238,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     return handleCreateNoteRequest(event);
   }
 
-  if (routeKey === "POST horses/") {
+  if (routeKey === "POST horse/add/") {
     return handleCreateHorseRequest(event);
   }
 

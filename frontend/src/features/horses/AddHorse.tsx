@@ -6,7 +6,6 @@ import { createHorse, fetchHorses } from "./horsesSlice";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
-import Table from "react-bootstrap/Table";
 
 import AWS from "aws-sdk";
 
@@ -60,7 +59,7 @@ const addImage = (e: any) => {
   );
 };
 
-export const Horses = () => {
+export const AddHorse = () => {
   const reduxState = useAppSelector((state) => state);
   const reduxDispatch = useAppDispatch();
   const [newHorseBreed, setNewHorseBreed] = useState("");
@@ -323,25 +322,6 @@ export const Horses = () => {
           Add
         </Button>{" "}
       </form>
-      <h1>Your horses</h1>
-      <Table striped>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Breed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reduxState.horses.horses.map((horse) => (
-            <tr key={horse.id}>
-              <td>{horse.id}</td>
-              <td>{horse.name}</td>
-              <td>{horse.breed}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
     </div>
   );
 };

@@ -29,14 +29,14 @@ resource "aws_apigatewayv2_integration" "lambda_rest_api" {
   integration_uri    = aws_lambda_function.rest_api.invoke_arn
 }
 
-resource "aws_apigatewayv2_route" "getAllHorses" {
+resource "aws_apigatewayv2_route" "proxy" {
   api_id    = aws_apigatewayv2_api.default.id
-  route_key = "ANY /horses"
+  route_key = "ANY /{proxy+}"
 
   target = "integrations/${aws_apigatewayv2_integration.lambda_rest_api.id}"
 }
 
-resource "aws_apigatewayv2_route" "getSingleHorse" {
+resource "aws_apigatewayv2_route" "singleHorse" {
   api_id    = aws_apigatewayv2_api.default.id
   route_key = "GET /horse/{id}"
 
@@ -45,15 +45,11 @@ resource "aws_apigatewayv2_route" "getSingleHorse" {
 
 
 resource "aws_lambda_permission" "rest_api" {
-  for_each = toset([
-    "horses",
-    "/horse/{id}"
-  ])
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.rest_api.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_apigatewayv2_api.default.execution_arn}/*/*/${each.key}"
+  source_arn = "${aws_apigatewayv2_api.default.execution_arn}/*/*"
 }
 

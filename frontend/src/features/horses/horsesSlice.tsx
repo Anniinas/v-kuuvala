@@ -86,7 +86,7 @@ export const createHorse = createAsyncThunk<
       createdDate: arg.createdDate,
       images: arg.images,
     };
-    return await fetch("/api/horses/", {
+    return await fetch("/api/horse/add/", {
       method: "POST",
       body: JSON.stringify(horse),
     })
