@@ -3,6 +3,7 @@ import { Navigation } from "./template/Navigation";
 import { Content } from "./template/Content";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../frontend/src/style.css";
 
 function App() {
   return (

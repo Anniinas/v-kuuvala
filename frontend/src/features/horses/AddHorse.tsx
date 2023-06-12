@@ -9,6 +9,7 @@ import { Button } from "react-bootstrap";
 
 import AWS from "aws-sdk";
 
+/*
 var albumBucketName = "anniina-react-spa-frontend";
 var bucketRegion = "eu-north-1";
 var IdentityPoolId = "eu-north-1:8124d7ec-2ed2-4c10-bccb-b9bd2b1323a0";
@@ -59,6 +60,7 @@ const addImage = (e: any) => {
   );
 };
 
+*/
 export const AddHorse = () => {
   const reduxState = useAppSelector((state) => state);
   const reduxDispatch = useAppDispatch();
@@ -72,19 +74,24 @@ export const AddHorse = () => {
   const [newHorseHeight, setNewHorseHeight] = useState("");
   const [newHorseDiscpline, setNewHorseDiscpline] = useState("");
   const [newHorseOwner, setNewHorseOwner] = useState("");
+  const [newHorseOwnerEmail, setNewHorseOwnerEmail] = useState("");
   const [newHorseBreeder, setNewHorseBreeder] = useState("");
   const [newHorseBreederName, setNewHorseBreederName] = useState("");
+  const [newHorseBreederEmail, setNewHorseBreederEmail] = useState("");
   const [newHorseLocation, setNewHorseLocation] = useState("");
   const [newHorseRegCode, setNewHorseRegCode] = useState("");
   const [newHorseSireId, setNewHorseSireId] = useState("");
   const [newHorsDamId, setNewHorseDamId] = useState("");
   const [newHorsePersonality, setNewHorsePersonality] = useState("");
-  const [newHorseCreatedDate, setNewHorseCreatedDate] = useState("");
-  const [newHorseImages, setNewHorseImages] = useState({ img: "" });
+  //const [newHorseCreatedDate, setNewHorseCreatedDate] = useState("");
+  //const [newHorseImages, setNewHorseImages] = useState({ img: "" });
 
   useEffect(() => {
     reduxDispatch(fetchHorses());
   }, [reduxDispatch]);
+
+  const timestamp = new Date();
+  const createdDate = timestamp.toString();
 
   return (
     <div>
@@ -106,13 +113,15 @@ export const AddHorse = () => {
               height: newHorseHeight,
               discpline: newHorseDiscpline,
               owner: newHorseOwner,
+              ownerEmail: newHorseOwnerEmail,
               breeder: newHorseBreeder,
               breederName: newHorseBreederName,
+              breederEmail: newHorseBreederEmail,
               location: newHorseLocation,
               regCode: newHorseRegCode,
               personality: newHorsePersonality,
-              createdDate: newHorseCreatedDate,
-              images: newHorseImages,
+              createdDate: createdDate,
+              //images: newHorseImages,
             })
           );
           e.preventDefault();
@@ -300,6 +309,7 @@ export const AddHorse = () => {
                   type="text"
                 />
               </InputGroup>
+              {/* 
               <Form.Label htmlFor="create-server-images">Image(s)</Form.Label>
               <InputGroup className="mb-3">
                 <Form.Control
@@ -311,6 +321,7 @@ export const AddHorse = () => {
                   type="file"
                 />
               </InputGroup>
+              */}
             </div>
           </div>
         </div>

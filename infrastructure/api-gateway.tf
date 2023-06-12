@@ -36,14 +36,6 @@ resource "aws_apigatewayv2_route" "proxy" {
   target = "integrations/${aws_apigatewayv2_integration.lambda_rest_api.id}"
 }
 
-resource "aws_apigatewayv2_route" "singleHorse" {
-  api_id    = aws_apigatewayv2_api.default.id
-  route_key = "GET /horse/{id}"
-
-  target = "integrations/${aws_apigatewayv2_integration.lambda_rest_api.id}"
-}
-
-
 resource "aws_lambda_permission" "rest_api" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"

@@ -23,3 +23,16 @@ resource "aws_dynamodb_table" "horses" {
     type = "S"
   }
 }
+
+resource "aws_dynamodb_table" "horseComptititions" {
+  name           = "horseComptititions"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
