@@ -10,15 +10,19 @@
     font-style: italic;
 }
 
-.node__root > circle {
+.node__root > g > circle {
     fill: grey;
+    stroke: #000;
+    stroke-width: 1;
   }
   
-  .node__branch > circle {
+  .node__branch > g > circle {
     fill: grey;
+    stroke: #000;
+    stroke-width: 1;
   }
   
-  .node__leaf > circle {
+  .node__leaf > g > circle {
     fill: grey;
     /* Let's also make the radius of leaf nodes larger 
     r: 40; */

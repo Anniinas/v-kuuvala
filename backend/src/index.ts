@@ -7,9 +7,10 @@ AWS.config.update({ region: "eu-north-1" });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
+const handleImageUpload = async (event: APIGatewayProxyEvent) => {
   let requestBodyJson = "";
-  console.log("handleCreateHorseRequest");
+  console.log("handleImageUpload");
+  console.log(event);
   {
     if (event.isBase64Encoded) {
       requestBodyJson = Buffer.from(event.body ?? "", "base64").toString(
@@ -20,8 +21,9 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
     }
   }
 
+  /*
   const requestBodyObject = JSON.parse(requestBodyJson) as {
-    id: string;
+    //id: string;
     name: string;
     breed: string;
     gender: string;
@@ -42,6 +44,7 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
     createdDate: string;
     personality: string;
     images: [];
+    attributes: [];
   };
 
   await new Promise((resolve, reject) => {
@@ -49,7 +52,7 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
       {
         TableName: "horses",
         Item: {
-          id: requestBodyObject.id,
+          id: AWS.util.uuid.v4(),
           name: requestBodyObject.name,
           breed: requestBodyObject.breed,
           gender: requestBodyObject.gender,
@@ -70,6 +73,97 @@ const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
           personality: requestBodyObject.personality,
           createdDate: requestBodyObject.createdDate,
           images: requestBodyObject.images,
+          attributes: requestBodyObject.attributes,
+        },
+      },
+      (err: AWSError) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(null);
+        }
+      }
+    );
+  }); */
+
+  return {
+    statusCode: 201,
+    headers: {
+      "content-type": "application/json",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT",
+    },
+    body: "Created.",
+  };
+};
+
+const handleCreateHorseRequest = async (event: APIGatewayProxyEvent) => {
+  let requestBodyJson = "";
+  console.log("handleCreateHorseRequest");
+  {
+    if (event.isBase64Encoded) {
+      requestBodyJson = Buffer.from(event.body ?? "", "base64").toString(
+        "utf8"
+      );
+    } else {
+      requestBodyJson = event.body ?? "";
+    }
+  }
+
+  const requestBodyObject = JSON.parse(requestBodyJson) as {
+    //id: string;
+    name: string;
+    breed: string;
+    gender: string;
+    dob: string;
+    //sireId: string;
+    //damId: string;
+    pedigree: [];
+    color: string;
+    height: string;
+    discpline: string;
+    owner: string;
+    ownerEmail: string;
+    breeder: string;
+    breederName: string;
+    breederEmail: string;
+    location: string;
+    regCode: string;
+    createdDate: string;
+    personality: string;
+    images: [];
+    attributes: [];
+  };
+
+  await new Promise((resolve, reject) => {
+    docClient.put(
+      {
+        TableName: "horses",
+        Item: {
+          id: AWS.util.uuid.v4(),
+          name: requestBodyObject.name,
+          breed: requestBodyObject.breed,
+          gender: requestBodyObject.gender,
+          dob: requestBodyObject.dob,
+          //sireId: requestBodyObject.sireId,
+          //damId: requestBodyObject.damId,
+          pedigree: requestBodyObject.pedigree,
+          color: requestBodyObject.color,
+          height: requestBodyObject.height,
+          discpline: requestBodyObject.discpline,
+          owner: requestBodyObject.owner,
+          ownerEmail: requestBodyObject.ownerEmail,
+          breeder: requestBodyObject.breeder,
+          breederName: requestBodyObject.breederName,
+          breederEmail: requestBodyObject.breederEmail,
+          location: requestBodyObject.location,
+          regCode: requestBodyObject.regCode,
+          personality: requestBodyObject.personality,
+          createdDate: requestBodyObject.createdDate,
+          images: requestBodyObject.images,
+          attributes: requestBodyObject.attributes,
         },
       },
       (err: AWSError) => {
@@ -171,6 +265,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   if (routeKey === "POST notes/") {
     return handleCreateNoteRequest(event);
   }*/
+
+  if (routeKey === "POST upload/images/") {
+    return handleImageUpload(event);
+  }
 
   if (routeKey === "POST horse/add/") {
     return handleCreateHorseRequest(event);

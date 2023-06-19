@@ -22,17 +22,21 @@ export const ListHorses = () => {
       <Table striped>
         <thead>
           <tr>
-            <th>#</th>
             <th>Name</th>
             <th>Breed</th>
+            <th>Gender</th>
+            <th>Color</th>
+            <th>Height</th>
           </tr>
         </thead>
         <tbody>
           {reduxState.horses.horses.map((horse) => (
             <tr key={horse.id}>
-              <td>{horse.id}</td>
               <td><a href={"/horse/" + horse.id}>{horse.name}</a></td>
               <td>{horse.breed}</td>
+              <td>{horse.gender}</td>
+              <td>{horse.color}</td>
+              <td>{horse.height}</td>
             </tr>
           ))}
         </tbody>

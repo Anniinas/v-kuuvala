@@ -136,28 +136,28 @@ export const fetchHorses = createAsyncThunk<
 
 
 export const fetchHorse = createAsyncThunk<
-Horse[],
-{ readonly horseId: any },
-{ readonly rejectValue: { readonly errorMessage: string } }
+  Horse[],
+  { readonly horseId: any },
+  { readonly rejectValue: { readonly errorMessage: string } }
 >("horse/fetch", async (arg, thunkAPI) => {
-return await fetch("/api/horse?id=" + arg.horseId, {
-  method: "GET",
-})
-  .then((response) => {
-    if (response.status === 200) {
-      return response.json();
-    } else {
-      throw new Error(
-        `Unexpected response from server (code ${response.status}).`
-      );
-    }
+  return await fetch("/api/horse?id=" + arg.horseId, {
+    method: "GET",
   })
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error(
+          `Unexpected response from server (code ${response.status}).`
+        );
+      }
+    })
 
-  .catch(function (error) {
-    console.error(error);
-    return thunkAPI.rejectWithValue({ errorMessage: error.message });
-  });
-}); 
+    .catch(function (error) {
+      console.error(error);
+      return thunkAPI.rejectWithValue({ errorMessage: error.message });
+    });
+});
 
 /*
 export const fetchHorse = createAsyncThunk<

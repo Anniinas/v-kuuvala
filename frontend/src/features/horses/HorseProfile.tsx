@@ -4,9 +4,6 @@ import { useParams } from 'react-router';
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { fetchHorse } from "./horsesSlice";
 
-
-import Table from "react-bootstrap/Table";
-
 import ReactMarkdown from 'react-markdown'
 import Tree from 'react-d3-tree';
 
@@ -15,65 +12,102 @@ export const HorseProfile = () => {
   const reduxDispatch = useAppDispatch();
 
   const params = useParams()
-  //console.log(params.horseId);
 
   useEffect(() => {
     reduxDispatch(fetchHorse({ horseId: params.horseId }));
   }, [reduxDispatch]);
 
-  const horse = (reduxState.horses.horses as any);
-
-
-  if (horse.length !== 0) {
-    console.log("horse found");
-    console.log((reduxState.horses.horses as any));
+  const getAncestorName = (ancestor: string) => {
+    if (typeof (reduxState.horses.horses as any)["pedigree"] !== "undefined") {
+      if (typeof (reduxState.horses.horses as any)["pedigree"][ancestor] !== "undefined") {
+        const item = (reduxState.horses.horses as any)["pedigree"][ancestor];
+        return item.name;
+      } else {
+        return "unknown"
+      }
+    } else {
+      return "unknown";
+    }
   }
 
+  const getAncestorAttr = (ancestor: string) => {
+    if (typeof (reduxState.horses.horses as any)["pedigree"] !== "undefined") {
+      const item = (reduxState.horses.horses as any)["pedigree"][ancestor];
+      return { url: item.address };
+    } else {
+      return { url: "" };
+    }
+  }
 
   const orgChart = {
 
     name: (reduxState.horses.horses as any)["name"],
     children: [
       {
-        name: horse["pedigree"]["Sire"] && horse["pedigree"]["Sire"]["name"] || "unknown",
+        name: getAncestorName("Sire"),
+        attributes: getAncestorAttr("Sire"),
         children: [
           {
-            name: horse["pedigree"]["Sire_s"] && horse["pedigree"]["Sire_s"]["name"] || "unknown",
+            name: getAncestorName("Sire_s"),
+            attributes: getAncestorAttr("Sire_s"),
             children: [
-              { name: horse["pedigree"]["Sire_ss"] && horse["pedigree"]["Sire_ss"]["name"] || "unknown" },
-              { name: horse["pedigree"]["Sire_se"] && horse["pedigree"]["Sire_se"]["name"] || "unknown" }
+              { name: getAncestorName("Sire_ss") },
+              { name: getAncestorName("Sire_sd") }
             ]
           },
           {
-            name: horse["pedigree"]["Sire_d"] && horse["pedigree"]["Sire_d"]["name"] || "unknown",
+            name: getAncestorName("Sire_d"),
+            attributes: getAncestorAttr("Sire_d"),
             children: [
-              { name: horse["pedigree"]["Sire_ds"] && horse["pedigree"]["Sire_ds"]["name"] || "unknown" },
-              { name: horse["pedigree"]["Sire_dd"] && horse["pedigree"]["Sire_dd"]["name"] || "unknown" }
+              { name: getAncestorName("Sire_ds") },
+              { name: getAncestorName("Sire_dd") }
             ]
           },
         ],
       },
       {
-        name: horse["pedigree"]["Dam"] && horse["pedigree"]["Dam"]["name"] || "unknown",
+        name: getAncestorName("Dam"),
+        attributes: getAncestorAttr("Dam"),
         children: [
           {
-            name: horse["pedigree"]["Dam_s"] && horse["pedigree"]["Dam_s"]["name"] || "unknown",
+            name: getAncestorName("Dam_s"),
+            attributes: getAncestorAttr("Dam_s"),
             children: [
-              { name: horse["pedigree"]["Dam_ss"] && horse["pedigree"]["Dam_ss"]["name"] || "unknown" },
-              { name: horse["pedigree"]["Dam_sd"] && horse["pedigree"]["Dam_sd"]["name"] || "unknown" }
+              { name: getAncestorName("Dam_ss") },
+              { name: getAncestorName("Dam_sd") }
             ]
           },
           {
-            name: horse["pedigree"]["Dam_d"] && horse["pedigree"]["Dam_d"]["name"] || "unknown",
+            name: getAncestorName("Dam_d"),
+            attributes: getAncestorAttr("Dam_d"),
             children: [
-              { name: horse["pedigree"]["Dam_ds"] && horse["pedigree"]["Dam_ds"]["name"] || "unknown" },
-              { name: horse["pedigree"]["Dam_sd"] && horse["pedigree"]["Dam_sd"]["name"] || "unknown" }
+              { name: getAncestorName("Dam_ds") },
+              { name: getAncestorName("Dam_dd") }
             ]
           },
         ],
       },
     ],
   };
+
+  const nodeSize = { x: 400, y: 50 };
+  const foreignObjectProps = { width: nodeSize.x, height: nodeSize.y, x: 20, y: -15 };
+
+  const renderForeignObjectNode = ({ foreignObjectProps, nodeDatum }: { foreignObjectProps: any, nodeDatum: any }) => (
+    <g>
+      <circle r={15}></circle>
+      <foreignObject {...foreignObjectProps}>
+        {nodeDatum.attributes?.url ? <a href={nodeDatum.attributes?.url}>{nodeDatum.name}</a> : nodeDatum.name}
+
+      </foreignObject>
+    </g>
+  );
+
+  const formatDate = (newTimestmap: number) => {
+    const toNumber = Number(newTimestmap);
+    const date = new Date(toNumber * 1000);
+    return date.toLocaleDateString('en-GB');
+  }
 
 
   return (
@@ -84,6 +118,7 @@ export const HorseProfile = () => {
 
       {/* <!-- Image gallery section --> */}
       <div id="carouselExampleIndicators" className="carousel slide mb-5" data-bs-ride="carousel">
+        <p style={{ fontWeight: "bold" }}>This is a sim-game horse / Tämä on virtuaalihevonen</p>
         <ol className="carousel-indicators">
           <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></li>
           <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
@@ -110,16 +145,16 @@ export const HorseProfile = () => {
         </a>
       </div>
 
+
       <>
         {/* <!-- Horse details table section --> */}
         <div className="row">
-          <h2 className="mb-4">Information</h2>
-          <table className="table table-striped col horseInfo">
-            <tbody>
-
-              <>
+          <div className="col-sm-5">
+            <h2 className="mb-4">Information</h2>
+            <table className="table table-striped col horseInfo">
+              <tbody>
                 <tr>
-                  <td>Name</td>
+                  <td style={{ width: "40%" }}>Name</td>
                   <td>{(reduxState.horses.horses as any)["name"]}</td>
                 </tr>
                 <tr>
@@ -132,7 +167,7 @@ export const HorseProfile = () => {
                 </tr>
                 <tr>
                   <td>Date of Birth</td>
-                  <td>{(reduxState.horses.horses as any)["dob"]}</td>
+                  <td>{formatDate((reduxState.horses.horses as any)["dob"])}</td>
                 </tr>
                 <tr>
                   <td>Color</td>
@@ -161,31 +196,83 @@ export const HorseProfile = () => {
                 <tr>
                   <td>Discipline</td>
                   <td>{(reduxState.horses.horses as any)["discpline"]}</td>
-                </tr></>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="col-sm-2">
+            <h2 className="mb-4">Attributes</h2>
+            <table className="table table-striped col horseInfo">
+              <tbody>
+                <tr>
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["speed"]}</td>
+                  <td>Speed</td>
+                </tr>
+                <tr>
 
-            </tbody>
-          </table>
-          <div className="col horsePersonality"><ReactMarkdown children={(reduxState.horses.horses as any)["personality"]} /></div>
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["stamina"]}</td>
+                  <td>Stamina</td>
+                </tr>
+                <tr>
+
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["courage"]}</td>
+                  <td>Courage</td>
+                </tr>
+                <tr>
+
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["obedience"]}</td>
+                  <td>Obedience</td>
+                </tr>
+                <tr>
+
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["agility"]}</td>
+                  <td>Agility</td>
+                </tr>
+                <tr>
+
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["gait"]}</td>
+                  <td>Gait</td>
+                </tr>
+                <tr>
+
+                  <td>{(reduxState.horses.horses as any)["attributes"] && (reduxState.horses.horses as any)["attributes"]["confidence"]}</td>
+                  <td>Confidence</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="col-sm-5 horsePersonality">
+            <h2 className="mb-4" style={{ fontStyle: "initial" }}>Personality</h2>
+            <ReactMarkdown children={(reduxState.horses.horses as any)["personality"]} />
+          </div>
         </div>
         <div className="row">
           <h2 className="mb-4">Pedigree</h2>
           <div id="treeWrapper" style={{ width: '100%', height: '30em' }}>
 
-            <Tree data={orgChart}
-              pathFunc="elbow"
-              rootNodeClassName="node__root"
-              nodeSize={{ x: 250, y: 40 }}
-              branchNodeClassName="node__branch"
-              leafNodeClassName="node__leaf"
-              translate={{ x: 60, y: 240 }}
-              collapsible={false}
-              zoomable={false}
-              draggable={false}
-              orientation="horizontal" />
+            {(reduxState.horses.horses as any).length !== 0 &&
+
+              <Tree data={orgChart}
+                pathFunc="elbow"
+                rootNodeClassName="node__root"
+                nodeSize={{ x: 250, y: 40 }}
+                branchNodeClassName="node__branch"
+                leafNodeClassName="node__leaf"
+                translate={{ x: 60, y: 240 }}
+                collapsible={false}
+                zoomable={false}
+                draggable={false}
+                renderCustomNodeElement={(props) =>
+                  renderForeignObjectNode({ ...props, foreignObjectProps })
+                }
+                orientation="horizontal" />}
           </div>
         </div>
         <div className="row">
+          {/* 
           <h2 className="mb-4">Competitions</h2>
+          <p>No competitions.</p>
+          
           <div className="table-responsive">
             <table className="table table-sm table-striped">
               <thead>
@@ -215,6 +302,7 @@ export const HorseProfile = () => {
               </tbody>
             </table>
           </div>
+          */}
         </div>
       </>
 
