@@ -115,37 +115,7 @@ export const HorseProfile = () => {
       {reduxState.horses.errorMessage !== null && (
         <strong>Error: {reduxState.horses.errorMessage}</strong>
       )}
-
-      {/* <!-- Image gallery section --> */}
-      <div id="carouselExampleIndicators" className="carousel slide mb-5" data-bs-ride="carousel">
-        <p style={{ fontWeight: "bold" }}>This is a sim-game horse / Tämä on virtuaalihevonen</p>
-        <ol className="carousel-indicators">
-          <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></li>
-          <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
-          <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
-        </ol>
-        <div className="carousel-inner">
-          <div className="carousel-item active">
-            <img src="https://via.placeholder.com/500x200" className="d-block w-100" alt="horse image" />
-          </div>
-          <div className="carousel-item">
-            <img src="https://via.placeholder.com/500x200" className="d-block w-100" alt="horse image" />
-          </div>
-          <div className="carousel-item">
-            <img src="https://via.placeholder.com/500x200" className="d-block w-100" alt="horse image" />
-          </div>
-        </div>
-        <a className="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
-          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Previous</span>
-        </a>
-        <a className="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
-          <span className="carousel-control-next-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Next</span>
-        </a>
-      </div>
-
-
+      <p style={{ fontWeight: "bold" }}>This is a sim-game horse / Tämä on virtuaalihevonen</p>
       <>
         {/* <!-- Horse details table section --> */}
         <div className="row">
@@ -194,8 +164,20 @@ export const HorseProfile = () => {
                   <td>{(reduxState.horses.horses as any)["breederEmail"]}</td>
                 </tr>
                 <tr>
+                  <td>Importer Name</td>
+                  <td>{(reduxState.horses.horses as any)["importerName"]}</td>
+                </tr>
+                <tr>
+                  <td>Importer Email</td>
+                  <td>{(reduxState.horses.horses as any)["importerEmail"]}</td>
+                </tr>
+                <tr>
                   <td>Discipline</td>
                   <td>{(reduxState.horses.horses as any)["discpline"]}</td>
+                </tr>
+                <tr>
+                  <td>Registration number</td>
+                  <td>{(reduxState.horses.horses as any)["regCode"]}</td>
                 </tr>
               </tbody>
             </table>
@@ -240,6 +222,36 @@ export const HorseProfile = () => {
                 </tr>
               </tbody>
             </table>
+            {/* <!-- Image gallery section --> */}
+            <div>
+              {/* <!-- Image gallery section --> */}
+              <div id="carouselExampleIndicators" className="carousel slide mb-5" data-bs-ride="carousel">
+                <ol className="carousel-indicators">
+                  <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></li>
+                  <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
+                  <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
+                </ol>
+                <div className="carousel-inner">
+                  <div className="carousel-item active">
+                    <a href={(reduxState.horses.horses as any)["images"] && (reduxState.horses.horses as any)["images"][0]["url"]} ><img src={(reduxState.horses.horses as any)["images"] && (reduxState.horses.horses as any)["images"][0]["url"]} className="d-block w-150" style={{ width: "200px" }} alt="horse image" /></a>
+                  </div>
+                  <div className="carousel-item">
+                    <img src="https://via.placeholder.com/200x200" className="d-block w-150" alt="horse image" />
+                  </div>
+                  <div className="carousel-item">
+                    <img src="https://via.placeholder.com/200x200" className="d-block w-150" alt="horse image" />
+                  </div>
+                </div>
+                <a className="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span className="visually-hidden">Previous</span>
+                </a>
+                <a className="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span className="visually-hidden">Next</span>
+                </a>
+              </div>
+            </div>
           </div>
           <div className="col-sm-5 horsePersonality">
             <h2 className="mb-4" style={{ fontStyle: "initial" }}>Personality</h2>

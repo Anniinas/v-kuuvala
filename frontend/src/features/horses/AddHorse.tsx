@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
 
-import AWS from "aws-sdk";
+//import AWS from "aws-sdk";
 
 /*
 var albumBucketName = "anniina-react-spa-frontend";
